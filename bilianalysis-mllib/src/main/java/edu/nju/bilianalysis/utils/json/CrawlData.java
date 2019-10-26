@@ -1,3 +1,5 @@
+package edu.nju.bilianalysis.utils.json;
+
 import java.io.Serializable;
 import java.util.List;
 
