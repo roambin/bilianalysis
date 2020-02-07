@@ -33,6 +33,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <scalaVersion>2.12.10</scalaVersion>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -69,8 +72,20 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.12.10</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-graphx_2.12</artifactId>
+            <version>2.4.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.12</artifactId>
             <version>2.4.4</version>
             <scope>provided</scope>
         </dependency>
@@ -85,10 +100,15 @@
             <version>3.11.1</version>
         </dependency>
         <dependency>
-            <groupId>it.uniroma1.dis.wsngroup.gexf4j</groupId>
-            <artifactId>gexf4j</artifactId>
-            <version>1.0.0</version>
+            <groupId>org.mongodb.spark</groupId>
+            <artifactId>mongo-spark-connector_2.12</artifactId>
+            <version>2.4.1</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>it.uniroma1.dis.wsngroup.gexf4j</groupId>-->
+            <!--<artifactId>gexf4j</artifactId>-->
+            <!--<version>1.0.0</version>-->
+        <!--</dependency>-->
     </dependencies>
 
 </project>

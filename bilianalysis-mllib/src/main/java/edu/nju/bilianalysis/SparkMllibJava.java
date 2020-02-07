@@ -42,7 +42,7 @@ public class SparkMllibJava{
         JavaRDD<Vector> testData = parsedDatas[1].map(s -> dealData(s, sums, sum));
         trainData.cache();
         // Cluster the data into two classes using KMeans
-        int numClusters = 30;
+        int numClusters = 25;
         int numIterations = 10000;
         int runs = 30;
         KMeans kMeans = new KMeans();
@@ -79,13 +79,20 @@ public class SparkMllibJava{
         database.drop();
         MongoCollection<Document> collectionCenter = database.getCollection("cluster_center");
         MongoCollection<Document> collectionCost = database.getCollection("cluster_cost");
-        MongoCollection<Document> collectionStatistic = database.getCollection("cluster_statistic");
+        MongoCollection<Document> collectionRate = database.getCollection("tag_rate");
         for(Vector vector: clusters.clusterCenters()){
             double[] rate = vector.toArray();
             collectionCenter.insertOne(new Document("view", rate[0]).append("like_coin", rate[1])
                     .append("collect", rate[2]).append("share", rate[3]).append("comment_barrage", rate[4]));
         }
         collectionCost.insertOne(new Document("cost", cost));
+        collectionRate.insertOne(new Document("view", sum/sums[0])
+                .append("barrage", sum/sums[1])
+                .append("like", sum/sums[2])
+                .append("coin", sum/sums[3])
+                .append("collect", sum/sums[4])
+                .append("share", sum/sums[5])
+                .append("comment", sum/sums[6]));
         client.close();
         clusterRDD.foreach(SparkMllibJava::mongoInsertCluster);
         jsc.stop();
@@ -94,9 +101,12 @@ public class SparkMllibJava{
         double[] arr = vector.toArray();
         //center
         double arrSum = 0;
+        for(int i = 0; i < arr.length; i++){
+            arr[i] = (arr[i] / sums[i]) * sum;
+        }
         for(double e: arr)  arrSum += e;
         for(int i = 0; i < arr.length; i++) {
-            double ratio = (arr[i] / arrSum) / (sums[i] / sum);
+            double ratio = arr[i] / arrSum;
             arr[i] = MyConf1.getRate(ratio);
         }
         //delete

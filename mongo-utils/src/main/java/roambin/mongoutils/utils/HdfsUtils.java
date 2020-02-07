@@ -62,7 +62,7 @@ public class HdfsUtils {
                 delete(hdfs, hdfsPath);
             }
             FSDataOutputStream fsos = hdfs.create(new Path(hdfsPath), true);
-            byte[] buffer = context.getBytes();
+            byte[] buffer = context.getBytes("utf-8");
             fsos.write(buffer);
             fsos.close();
             return true;

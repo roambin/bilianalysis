@@ -9,6 +9,7 @@ import edu.nju.bilianalysis.utils.json.MyJson;
 import edu.nju.bilianalysis.utils.mongodb.MongoUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
@@ -19,10 +20,10 @@ import scala.Tuple2;
 import java.util.*;
 
 public class SparkStreamingJava {
-    public static void main(String [] args) throws Exception{
+    public static void main(String [] args){
         SparkConf conf = new SparkConf().setAppName("bili-analysis-streaming");
         JavaSparkContext sc = new JavaSparkContext(conf);
-        JavaStreamingContext ssc = new JavaStreamingContext(sc, Durations.seconds(3));
+        JavaStreamingContext ssc = new JavaStreamingContext(sc, Durations.seconds(5));
         JavaDStream<String> lines = ssc.textFileStream(MyConf1.HDFS_STREAMING_PATH);
         JavaDStream<CrawlData> crawlDataRDD = lines.filter(s -> s.length() > 10).map(MyJson::jsonToObject);
 
@@ -38,7 +39,11 @@ public class SparkStreamingJava {
         globalHotReduce.foreachRDD(rdd -> rdd.foreach(s -> mongoUpdate(s, "tag_hot", "tag", "hot")));
 
         ssc.start();
-        ssc.awaitTermination();
+        try{
+            ssc.awaitTermination();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     public static JavaPairDStream<String,Double> getTimeTag(JavaDStream<CrawlData> crawlDataRDD){
         JavaPairDStream<String, CrawlData> timePair = crawlDataRDD.mapToPair(s->{
@@ -57,7 +62,8 @@ public class SparkStreamingJava {
         return timeCount;
     }
     public static JavaPairDStream<String,Double> getTagWeight(JavaDStream<CrawlData> crawlDataRDD, float[] weights){
-        JavaPairDStream<String, CrawlData> tag_crawlData = crawlDataRDD.flatMapToPair(s->{
+        JavaPairDStream<String, CrawlData> tag_crawlData = crawlDataRDD.flatMap(new FlatMapFunction<CrawlData, Object>() {
+        }).flatMapToPair(s->{
             List<Tuple2<String, CrawlData>> list = new ArrayList<>();
             for (String temp : s.tag) {
                 list.add(new Tuple2<>(temp,s));

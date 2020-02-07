@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="echarts.min.js"></script>
+    <script src="jquery-3.4.1.min.js"></script>
+   <script src="view.js"></script>
+   <script src="hot.js"></script>
+   <script src="time.js"></script>
+<!--    <meta http-equiv="refresh" content="10">-->
+</head>
+<body>
+<div id="stopped" style="width: 1300px;height:20px;font-size: 20px;color: #e2627f;">waiting...</div><br>
+<div id="tag_view" style="width: 1300px;height:400px;"></div>
+<div id="tag_hot" style="width: 1300px;height:400px;"></div>
+<div id="time_view" style="width: 1300px;height:400px;"></div>
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    const myChartView = echarts.init(document.getElementById('tag_view'));
+    const myChartHot = echarts.init(document.getElementById('tag_hot'));
+    const myChartTime = echarts.init(document.getElementById('time_view'));
+    setInterval('flushView(myChartView);flushHot(myChartHot);flushTime(myChartTime)',3000);
+</script>
+</body>
+</html>
+

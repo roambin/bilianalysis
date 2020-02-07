@@ -32,7 +32,8 @@ public class MockStreaming {
             if(isOff()) break;
             if(append == 1)    writeControl(1, avNum + i * step, loop, step, sleepTime, append);
             int newAvNum = avNum + (i - 1) * step;
-            FindIterable<Document> findIterable = mongoCollection.find(new Document().append("av_num", new Document("$gte", newAvNum).append("$lt", newAvNum + step)));
+            FindIterable<Document> findIterable = mongoCollection.find(
+                    new Document().append("av_num", new Document("$gte", newAvNum).append("$lt", newAvNum + step)));
             //findIterable.forEach((Consumer<Document>)System.out::println);
             StringBuffer stringBuffer = new StringBuffer();
             findIterable.forEach((Consumer<Document>)e -> stringBuffer.append(e.toJson()).append('\n'));
@@ -40,8 +41,7 @@ public class MockStreaming {
             if(stringBuffer.length() > 0){
                 HdfsUtils.putString(fileSystem, new String(stringBuffer), "/data/streaming/m" + newAvNum, true);
                 System.out.println("input: m" + newAvNum + ", length: " + step);
-            }else {
-                break;
+                System.out.println(new String(stringBuffer));
             }
             Thread.sleep(sleepTime);
         }

@@ -1,0 +1,6 @@
+on/off: 1
+avNum: 60000001
+loop: 2
+step: 10
+sleep time: 100
+append: 0
